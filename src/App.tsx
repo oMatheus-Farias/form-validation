@@ -1,12 +1,11 @@
-import { Button } from "./components/ui/button";
+import FormValidationPage from "./pages/form-validation"
 
 const App = () => {
-  return (
-    <div>
-      <h1>React App</h1>
-      <Button>Click me</Button>
-    </div>
-  );
-};
+    return (
+        <div className="flex min-h-screen w-full items-center justify-center bg-slate-950">
+            <FormValidationPage />
+        </div>
+    )
+}
 
-export default App;
+export default App
