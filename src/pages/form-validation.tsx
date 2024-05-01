@@ -11,15 +11,29 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Form } from "@/components/ui/form"
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form"
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 
 type FormData = z.infer<typeof formSchema>
 
 const formSchema = z.object({
-    name: z.string().min(1, { message: "Nome é obrigatório." }),
-    email: z.string().email({ message: "E-mail inválido." }).toLowerCase(),
+    name: z
+        .string({ required_error: "O nome é obrigatório." })
+        .min(2, { message: "Insira um nome válido." }),
+    email: z
+        .string({ required_error: "E-mail é obrigatório." })
+        .email({ message: "E-mail inválido." })
+        .toLowerCase(),
     password: z
-        .string()
+        .string({ required_error: "Senha é obrigatória." })
         .min(6, { message: "Senha deve ter no mínimo 6 caracteres." }),
     select: z
         .string({ required_error: "Selecione um fuso horário." })
@@ -29,10 +43,17 @@ const formSchema = z.object({
 const FormValidationPage = () => {
     const form = useForm<FormData>({
         resolver: zodResolver(formSchema),
+        defaultValues: {
+            name: "",
+            email: "",
+            password: "",
+            select: "",
+        },
     })
 
     const onSubmit = (data: FormData) => {
         console.log(data)
+        form.reset()
     }
 
     return (
@@ -121,20 +142,55 @@ const FormValidationPage = () => {
 
                         <div className="flex flex-col gap-1">
                             <label className="font-bold">
-                                Selecione um fuso horário
+                                Selecione uma fruta
                             </label>
-                            <select
-                                className="rounded-md p-2"
-                                {...form.register("select")}
-                            >
-                                <option value="">
-                                    Selecione um fuso horário
-                                </option>
-                                <option value="utc-3">UTC-3</option>
-                                <option value="utc-4">UTC-4</option>
-                                <option value="utc-5">UTC-5</option>
-                            </select>
-
+                            <FormField
+                                control={form.control}
+                                name="select"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger
+                                                    className={`w-full ${
+                                                        form.formState.errors
+                                                            .select
+                                                            ? "border-red-500"
+                                                            : ""
+                                                    }`}
+                                                >
+                                                    <SelectValue placeholder="Selecione uma fruta" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectLabel>
+                                                        Frutas
+                                                    </SelectLabel>
+                                                    <SelectItem value="apple">
+                                                        Apple
+                                                    </SelectItem>
+                                                    <SelectItem value="banana">
+                                                        Banana
+                                                    </SelectItem>
+                                                    <SelectItem value="blueberry">
+                                                        Blueberry
+                                                    </SelectItem>
+                                                    <SelectItem value="grapes">
+                                                        Grapes
+                                                    </SelectItem>
+                                                    <SelectItem value="pineapple">
+                                                        Pineapple
+                                                    </SelectItem>
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    </FormItem>
+                                )}
+                            />
                             {form.formState.errors &&
                                 form.formState.errors.select && (
                                     <p className="text-sm text-red-500">
